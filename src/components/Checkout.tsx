@@ -5,14 +5,16 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Check, MapPin, CreditCard, Phone, Sparkles } from "lucide-react";
 import { Badge } from "./ui/badge";
+import { Payment } from "./Payment";
 
 interface CheckoutProps {
   device: Device;
   plan: Plan;
   onBack: () => void;
+  onPaymentComplete?: () => void;
 }
 
-export function Checkout({ device, plan, onBack }: CheckoutProps) {
+export function Checkout({ device, plan, onBack, onPaymentComplete }: CheckoutProps) {
   const [step, setStep] = useState<"details" | "delivery" | "payment" | "confirmation">("details");
   const [formData, setFormData] = useState({
     firstName: "",
@@ -27,9 +29,24 @@ export function Checkout({ device, plan, onBack }: CheckoutProps) {
 
   const totalMonthly = device.price36 + plan.price;
 
-  const handleComplete = () => {
+  const handlePaymentComplete = () => {
     setStep("confirmation");
+    if (onPaymentComplete) {
+      onPaymentComplete();
+    }
   };
+
+  if (step === "payment") {
+    return (
+      <Payment
+        device={device}
+        plan={plan}
+        formData={formData}
+        onBack={() => setStep("details")}
+        onComplete={handlePaymentComplete}
+      />
+    );
+  }
 
   if (step === "confirmation") {
     return (
@@ -306,12 +323,12 @@ export function Checkout({ device, plan, onBack }: CheckoutProps) {
               </div>
 
               <Button
-                onClick={handleComplete}
+                onClick={() => setStep("payment")}
                 className="w-full bg-[#00A9CE] hover:bg-[#0098b8] mb-3"
                 size="lg"
               >
                 <CreditCard className="mr-2 w-5 h-5" />
-                Complete order
+                Proceed to Payment
               </Button>
 
               <p className="text-xs text-muted-foreground text-center">

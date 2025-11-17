@@ -1,5 +1,6 @@
 import { Device } from "../types/device";
 import { DeviceCard } from "./DeviceCard";
+import { TrendingExplanation } from "./TrendingExplanation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef } from "react";
 
@@ -55,16 +56,32 @@ export function DiscoveryCarousel({
         className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-4"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
-        {devices.map((device) => (
-          <DeviceCard
-            key={device.id}
-            device={device}
-            onSelect={onSelectDevice}
-            onCompare={onCompareDevice}
-            variant="carousel"
-            gamingMode={gamingMode}
-          />
-        ))}
+        {devices.map((device) => {
+          const card = (
+            <DeviceCard
+              key={device.id}
+              device={device}
+              onSelect={onSelectDevice}
+              onCompare={onCompareDevice}
+              variant="carousel"
+              gamingMode={gamingMode}
+            />
+          );
+
+          // Show trending explanation only for "Trending This Week" carousel
+          const isTrending = title.toLowerCase().includes("trending");
+          if (isTrending) {
+            return (
+              <div key={device.id} className="flex-shrink-0">
+                <TrendingExplanation device={device}>
+                  <div className="cursor-help w-full h-full">{card}</div>
+                </TrendingExplanation>
+              </div>
+            );
+          }
+
+          return card;
+        })}
       </div>
     </div>
   );

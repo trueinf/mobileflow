@@ -36,17 +36,22 @@ export function DeviceCard({
   }
   return (
     <div
-      className={`bg-white rounded-2xl border border-border hover:border-[#00A9CE] hover:shadow-lg transition-all group ${
+      className={`bg-white rounded-2xl border border-border hover:border-[#00A9CE] hover:shadow-lg transition-all group h-full flex flex-col ${
         variant === "carousel" ? "min-w-[280px]" : ""
       }`}
     >
-      <div className="p-6">
+      <div className="p-6 flex flex-col flex-1">
         {/* Image */}
-        <div className="relative aspect-square mb-4 flex items-center justify-center bg-gradient-to-br from-gray-50 to-white rounded-xl overflow-hidden">
+        <div className="relative mb-4 flex items-center justify-center bg-gradient-to-br from-gray-50 to-white rounded-xl overflow-hidden h-[240px] w-full">
           <img
             src={device.image}
             alt={device.name}
-            className="w-3/4 h-3/4 object-contain group-hover:scale-105 transition-transform"
+            className="object-contain group-hover:scale-105 transition-transform"
+            style={{ 
+              height: '200px', 
+              width: 'auto',
+              maxWidth: '100%'
+            }}
           />
           {device.matchScore && (
             <div className="absolute top-3 right-3 bg-[#00A9CE] text-white px-3 py-1 rounded-full">
@@ -168,7 +173,7 @@ export function DeviceCard({
         </div>
 
         {/* Actions */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 mt-auto">
           <Button
             onClick={() => onSelect?.(device)}
             className="flex-1 bg-[#00A9CE] hover:bg-[#0098b8]"

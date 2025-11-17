@@ -2,6 +2,7 @@ import { Search, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { PersonaSwitcher } from "./PersonaSwitcher";
+import { NavbarMenu } from "./layout/NavbarMenu";
 
 interface HeaderProps {
   selectedPersona: string | null;
@@ -51,24 +52,30 @@ export function Header({ selectedPersona, onPersonaChange }: HeaderProps) {
             >
               Shop
             </a>
-            <a
-              href="#plans"
-              className="text-foreground hover:text-[#00A9CE] transition-colors"
-            >
-              Plans
-            </a>
-            <a
-              href="#deals"
-              className="text-foreground hover:text-[#00A9CE] transition-colors"
-            >
-              Deals
-            </a>
-            <a
-              href="#support"
-              className="text-foreground hover:text-[#00A9CE] transition-colors"
-            >
-              Support
-            </a>
+            {selectedPersona ? (
+              <NavbarMenu selectedPersona={selectedPersona} />
+            ) : (
+              <>
+                <a
+                  href="#plans"
+                  className="text-foreground hover:text-[#00A9CE] transition-colors"
+                >
+                  Plans
+                </a>
+                <a
+                  href="#deals"
+                  className="text-foreground hover:text-[#00A9CE] transition-colors"
+                >
+                  Deals
+                </a>
+                <a
+                  href="#support"
+                  className="text-foreground hover:text-[#00A9CE] transition-colors"
+                >
+                  Support
+                </a>
+              </>
+            )}
           </nav>
 
           {/* Persona Switcher (appears after selection) */}
