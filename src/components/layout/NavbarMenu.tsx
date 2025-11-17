@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from "react";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -502,14 +503,14 @@ export function NavbarMenu({ selectedPersona }: NavbarMenuProps) {
     const dealRadar = isDealsMenu ? getDealRadarContent() : null;
     
     return (
-      <div className="w-[800px] p-6">
-        <div className="grid grid-cols-3 gap-6">
+      <div className="w-[600px] p-4 bg-white">
+        <div className="grid grid-cols-3 gap-3">
           {/* Baseline Sections */}
-          <div className="col-span-2 space-y-6">
+          <div className="col-span-2 space-y-4">
             {/* Deal Radar - Dynamic Section for Deals */}
             {isDealsMenu && dealRadar && (
-              <div className="mb-6 p-4 bg-gradient-to-r from-[#00A9CE]/10 via-purple-50/30 to-blue-50/30 rounded-xl border border-[#00A9CE]/20">
-                <div className="flex items-center gap-2 mb-3">
+              <div className="mb-4 p-3 bg-gradient-to-r from-[#00A9CE]/10 via-purple-50/30 to-blue-50/30 rounded-xl border border-[#00A9CE]/20">
+                <div className="flex items-center gap-2 mb-2">
                   <Sparkles className="w-5 h-5 text-[#00A9CE]" />
                   <h4 className="text-sm font-bold text-[#00A9CE]">Deal Radar</h4>
                   <Badge className="bg-[#00A9CE] text-white text-xs ml-auto">AI-Powered</Badge>
@@ -529,15 +530,15 @@ export function NavbarMenu({ selectedPersona }: NavbarMenuProps) {
             )}
             {baseline.map((section, idx) => (
               <div key={idx}>
-                <h4 className="text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wide">
+                <h4 className="text-xs font-semibold mb-2 text-muted-foreground uppercase tracking-wide">
                   {section.title}
                 </h4>
-                <ul className="space-y-2">
+                <ul className="space-y-1">
                   {section.items.map((item, itemIdx) => (
                     <li key={itemIdx}>
                       <a
                         href={item.href || "#"}
-                        className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors group"
+                        className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-muted transition-colors group"
                       >
                         <span className="text-muted-foreground group-hover:text-[#00A9CE] transition-colors">
                           {item.icon}
@@ -557,23 +558,23 @@ export function NavbarMenu({ selectedPersona }: NavbarMenuProps) {
 
             {/* Persona Modules */}
             {personaModules.length > 0 && (
-              <div className="pt-4 border-t">
-                <div className="mb-3">
-                  <Badge variant="outline" className="bg-[#00A9CE]/10 text-[#00A9CE] border-[#00A9CE]/20">
+              <div className="pt-3 border-t">
+                <div className="mb-2">
+                  <Badge variant="outline" className="bg-[#00A9CE]/10 text-[#00A9CE] border-[#00A9CE]/20 text-xs">
                     Personalized for You
                   </Badge>
                 </div>
                 {personaModules.map((section, idx) => (
-                  <div key={idx} className="mb-4">
-                    <h4 className="text-sm font-semibold mb-3 text-[#00A9CE]">
+                  <div key={idx} className="mb-3">
+                    <h4 className="text-xs font-semibold mb-2 text-[#00A9CE]">
                       {section.title}
                     </h4>
-                    <ul className="space-y-2">
+                    <ul className="space-y-1">
                       {section.items.map((item, itemIdx) => (
                         <li key={itemIdx}>
                           <a
                             href={item.href || "#"}
-                            className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#00A9CE]/5 transition-colors group"
+                            className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-[#00A9CE]/5 transition-colors group"
                           >
                             <span className="text-[#00A9CE] group-hover:text-[#0098b8] transition-colors">
                               {item.icon}
@@ -595,24 +596,24 @@ export function NavbarMenu({ selectedPersona }: NavbarMenuProps) {
           </div>
 
           {/* AI Shortcuts */}
-          <div className="border-l pl-6">
-            <h4 className="text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wide">
+          <div className="border-l pl-4">
+            <h4 className="text-xs font-semibold mb-2 text-muted-foreground uppercase tracking-wide">
               AI Shortcuts
             </h4>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {aiShortcuts.map((shortcut, idx) => (
                 <Button
                   key={idx}
                   variant="outline"
-                  className="w-full justify-start h-auto p-3 hover:bg-[#00A9CE]/5 hover:border-[#00A9CE] group"
+                  className="w-full justify-start h-auto p-2 hover:bg-[#00A9CE]/5 hover:border-[#00A9CE] group"
                 >
-                  <div className="flex items-start gap-3 w-full">
+                  <div className="flex items-start gap-2 w-full">
                     <span className="text-[#00A9CE] mt-0.5 group-hover:scale-110 transition-transform">
                       {shortcut.icon}
                     </span>
                     <div className="flex-1 text-left">
-                      <div className="font-semibold text-sm mb-1">{shortcut.title}</div>
-                      <div className="text-xs text-muted-foreground">{shortcut.description}</div>
+                      <div className="font-semibold text-xs mb-0.5">{shortcut.title}</div>
+                      <div className="text-xs text-muted-foreground leading-tight">{shortcut.description}</div>
                     </div>
                     <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-[#00A9CE] transition-colors" />
                   </div>
@@ -625,37 +626,178 @@ export function NavbarMenu({ selectedPersona }: NavbarMenuProps) {
     );
   };
 
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const clickTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Close menu when clicking outside - use click instead of mousedown to avoid conflicts
+  useEffect(() => {
+    if (!openMenu) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      // Small delay to allow click handlers to process first
+      if (clickTimeoutRef.current) {
+        clearTimeout(clickTimeoutRef.current);
+      }
+      
+      clickTimeoutRef.current = setTimeout(() => {
+        if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+          setOpenMenu(null);
+        }
+      }, 10);
+    };
+
+    // Use click event instead of mousedown to avoid race conditions
+    document.addEventListener("click", handleClickOutside, true);
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside, true);
+      if (clickTimeoutRef.current) {
+        clearTimeout(clickTimeoutRef.current);
+      }
+    };
+  }, [openMenu]);
+
+  const handleMenuClick = (e: React.MouseEvent<HTMLButtonElement>, menuName: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Clear any pending outside click handlers
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+    }
+    
+    const newState = openMenu === menuName ? null : menuName;
+    setOpenMenu(newState);
+  };
+
   return (
-    <NavigationMenu>
+    <NavigationMenu ref={menuRef} viewport={false}>
       <NavigationMenuList>
         {/* Shop */}
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Shop</NavigationMenuTrigger>
-          <NavigationMenuContent>
+        <NavigationMenuItem value="shop">
+          <NavigationMenuTrigger
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleMenuClick(e, "shop");
+            }}
+            onPointerEnter={(e: React.PointerEvent<HTMLButtonElement>) => {
+              e.preventDefault();
+            }}
+          >
+            Shop
+          </NavigationMenuTrigger>
+          <NavigationMenuContent 
+            className={openMenu === "shop" ? "" : "hidden"}
+            style={{ 
+              display: openMenu === "shop" ? "block" : "none",
+              position: "absolute",
+              top: "100%",
+              left: 0,
+              marginTop: "0.375rem",
+              zIndex: 1000,
+              backgroundColor: "white",
+              minWidth: "600px",
+              maxHeight: "500px",
+              overflowY: "auto",
+              overflowX: "hidden"
+            }}
+          >
             {renderMenuContent(shopBaseline, shopPersonaModules, shopAIShortcuts)}
           </NavigationMenuContent>
         </NavigationMenuItem>
 
         {/* Plans */}
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Plans</NavigationMenuTrigger>
-          <NavigationMenuContent>
+        <NavigationMenuItem value="plans">
+          <NavigationMenuTrigger
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleMenuClick(e, "plans");
+            }}
+            onPointerEnter={(e: React.PointerEvent<HTMLButtonElement>) => {
+              e.preventDefault();
+            }}
+          >
+            Plans
+          </NavigationMenuTrigger>
+          <NavigationMenuContent 
+            className={openMenu === "plans" ? "" : "hidden"}
+            style={{ 
+              display: openMenu === "plans" ? "block" : "none",
+              position: "absolute",
+              top: "100%",
+              left: 0,
+              marginTop: "0.375rem",
+              zIndex: 1000,
+              backgroundColor: "white",
+              minWidth: "600px",
+              maxHeight: "500px",
+              overflowY: "auto",
+              overflowX: "hidden"
+            }}
+          >
             {renderMenuContent(plansBaseline, plansPersonaModules, plansAIShortcuts)}
           </NavigationMenuContent>
         </NavigationMenuItem>
 
         {/* Deals */}
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Deals</NavigationMenuTrigger>
-          <NavigationMenuContent>
+        <NavigationMenuItem value="deals">
+          <NavigationMenuTrigger
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleMenuClick(e, "deals");
+            }}
+            onPointerEnter={(e: React.PointerEvent<HTMLButtonElement>) => {
+              e.preventDefault();
+            }}
+          >
+            Deals
+          </NavigationMenuTrigger>
+          <NavigationMenuContent 
+            className={openMenu === "deals" ? "" : "hidden"}
+            style={{ 
+              display: openMenu === "deals" ? "block" : "none",
+              position: "absolute",
+              top: "100%",
+              left: 0,
+              marginTop: "0.375rem",
+              zIndex: 1000,
+              backgroundColor: "white",
+              minWidth: "600px",
+              maxHeight: "500px",
+              overflowY: "auto",
+              overflowX: "hidden"
+            }}
+          >
             {renderMenuContent(dealsBaseline, dealsPersonaModules, dealsAIShortcuts, true)}
           </NavigationMenuContent>
         </NavigationMenuItem>
 
         {/* Support */}
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Support</NavigationMenuTrigger>
-          <NavigationMenuContent>
+        <NavigationMenuItem value="support">
+          <NavigationMenuTrigger
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              handleMenuClick(e, "support");
+            }}
+            onPointerEnter={(e: React.PointerEvent<HTMLButtonElement>) => {
+              e.preventDefault();
+            }}
+          >
+            Support
+          </NavigationMenuTrigger>
+          <NavigationMenuContent 
+            className={openMenu === "support" ? "" : "hidden"}
+            style={{ 
+              display: openMenu === "support" ? "block" : "none",
+              position: "absolute",
+              top: "100%",
+              left: 0,
+              marginTop: "0.375rem",
+              zIndex: 1000,
+              backgroundColor: "white",
+              minWidth: "600px",
+              maxHeight: "500px",
+              overflowY: "auto",
+              overflowX: "hidden"
+            }}
+          >
             {renderMenuContent(supportBaseline, supportPersonaModules, supportAIShortcuts)}
           </NavigationMenuContent>
         </NavigationMenuItem>

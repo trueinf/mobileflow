@@ -16,6 +16,8 @@ export function TrendingExplanation({ device, children }: TrendingExplanationPro
   const [position, setPosition] = useState<{ top: number; left: number; side: "right" | "left" | "top" | "bottom" }>({ top: 0, left: 0, side: "right" });
   const triggerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isHoveringRef = useRef(false);
 
   // Generate trending reasons based on device properties
   const getTrendingReasons = (device: Device) => {
@@ -66,24 +68,40 @@ export function TrendingExplanation({ device, children }: TrendingExplanationPro
 
   const reasons = getTrendingReasons(device);
 
-  // Calculate position based on viewport
+  // Cleanup timeout on unmount
   useEffect(() => {
-    if (isOpen && triggerRef.current) {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Calculate position based on viewport - only recalculate when isOpen changes or on scroll/resize
+  useEffect(() => {
+    if (!isOpen || !triggerRef.current) {
+      // Reset position when closed
+      setPosition({ top: 0, left: 0, side: "right" });
+      return;
+    }
+    
+    const calculatePosition = () => {
+      if (!triggerRef.current) return;
       const rect = triggerRef.current.getBoundingClientRect();
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
       const popoverWidth = 380;
       const popoverHeight = 480;
-      const offset = 20; // Increased offset to avoid overlap
+      const offset = 20;
       
-      let newPosition = { top: 0, left: 0, side: "right" as const };
+      let newPosition: { top: number; left: number; side: "right" | "left" | "top" | "bottom" } = { top: 0, left: 0, side: "right" };
       
       // Try to position on the right first (preferred)
       if (rect.right + popoverWidth + offset < viewportWidth) {
         newPosition = {
           top: rect.top + window.scrollY - 10,
           left: rect.right + offset,
-          side: "right",
+          side: "right" as const,
         };
       } 
       // Try left side
@@ -91,7 +109,7 @@ export function TrendingExplanation({ device, children }: TrendingExplanationPro
         newPosition = {
           top: rect.top + window.scrollY - 10,
           left: rect.left - popoverWidth - offset,
-          side: "left",
+          side: "left" as const,
         };
       }
       // Try top
@@ -99,7 +117,7 @@ export function TrendingExplanation({ device, children }: TrendingExplanationPro
         newPosition = {
           top: rect.top - popoverHeight - offset + window.scrollY,
           left: Math.max(offset, Math.min(rect.left + (rect.width / 2) - (popoverWidth / 2), viewportWidth - popoverWidth - offset)),
-          side: "top",
+          side: "top" as const,
         };
       }
       // Default to bottom
@@ -107,30 +125,50 @@ export function TrendingExplanation({ device, children }: TrendingExplanationPro
         newPosition = {
           top: rect.bottom + offset + window.scrollY,
           left: Math.max(offset, Math.min(rect.left + (rect.width / 2) - (popoverWidth / 2), viewportWidth - popoverWidth - offset)),
-          side: "bottom",
+          side: "bottom" as const,
         };
       }
       
-      // Ensure popover stays within viewport bounds - adjust if needed
+      // Ensure popover stays within viewport bounds
       newPosition.left = Math.max(10, Math.min(newPosition.left, viewportWidth - popoverWidth - 10));
       newPosition.top = Math.max(10 + window.scrollY, Math.min(newPosition.top, viewportHeight + window.scrollY - popoverHeight - 10));
       
       setPosition(newPosition);
-    }
+    };
+    
+    // Calculate position immediately - no delay to prevent glitching
+    calculatePosition();
+    
+    // Also recalculate on scroll/resize (debounced)
+    let scrollTimeout: ReturnType<typeof setTimeout>;
+    let resizeTimeout: ReturnType<typeof setTimeout>;
+    
+    const handleScroll = () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(calculatePosition, 50);
+    };
+    
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(calculatePosition, 50);
+    };
+    
+    window.addEventListener('scroll', handleScroll, true);
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      clearTimeout(scrollTimeout);
+      clearTimeout(resizeTimeout);
+      window.removeEventListener('scroll', handleScroll, true);
+      window.removeEventListener('resize', handleResize);
+    };
   }, [isOpen]);
 
   const popoverContent = (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop overlay for better visibility */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9998] bg-black/5 pointer-events-none"
-            onClick={() => setIsOpen(false)}
-          />
+          {/* Backdrop overlay for better visibility - removed to prevent white screen */}
           <motion.div
             ref={contentRef}
             initial={{ opacity: 0, scale: 0.95, y: position.side === "top" ? 10 : position.side === "bottom" ? -10 : 0, x: position.side === "right" ? -10 : position.side === "left" ? 10 : 0 }}
@@ -139,20 +177,45 @@ export function TrendingExplanation({ device, children }: TrendingExplanationPro
             transition={{ duration: 0.2 }}
             className="fixed z-[9999] pointer-events-auto"
             style={{
-              top: `${position.top}px`,
-              left: `${position.left}px`,
+              top: position.top > 0 ? `${position.top}px` : 'auto',
+              left: position.left > 0 ? `${position.left}px` : 'auto',
+              visibility: position.top > 0 && position.left > 0 ? 'visible' : 'hidden',
             }}
-            onMouseEnter={() => setIsOpen(true)}
-            onMouseLeave={(e) => {
-              // Only close if we're not moving to the trigger
-              const relatedTarget = e.relatedTarget as HTMLElement;
-              if (!relatedTarget || !triggerRef.current?.contains(relatedTarget)) {
-                setTimeout(() => {
-                  if (!triggerRef.current?.matches(':hover')) {
-                    setIsOpen(false);
-                  }
-                }, 100);
+            onMouseEnter={() => {
+              isHoveringRef.current = true;
+              // Clear any pending close timeout immediately
+              if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+                timeoutRef.current = null;
               }
+              // Ensure it stays open
+              setIsOpen(true);
+            }}
+            onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
+              const relatedTarget = e.relatedTarget;
+              
+              // Check if we're moving back to the trigger - if so, do nothing
+              if (relatedTarget instanceof Node && triggerRef.current?.contains(relatedTarget)) {
+                return;
+              }
+              
+              // Clear any existing timeout
+              if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+              }
+              
+              // Set a longer delay to allow moving back to trigger
+              timeoutRef.current = setTimeout(() => {
+                const isHoveringTrigger = triggerRef.current?.matches(':hover') || false;
+                const isHoveringContent = contentRef.current?.matches(':hover') || false;
+                
+                // Only close if we're truly not hovering over anything
+                if (!isHoveringTrigger && !isHoveringContent) {
+                  isHoveringRef.current = false;
+                  setIsOpen(false);
+                }
+                timeoutRef.current = null;
+              }, 400);
             }}
           >
             <Card className="w-[380px] p-0 shadow-2xl border-2 border-[#00A9CE]/40 bg-white backdrop-blur-sm ring-4 ring-white/50">
@@ -289,22 +352,45 @@ export function TrendingExplanation({ device, children }: TrendingExplanationPro
     <>
       <div 
         ref={triggerRef}
-        onMouseEnter={(e) => {
+        onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
           e.stopPropagation();
+          isHoveringRef.current = true;
+          // Clear any pending close timeout immediately
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+          }
+          // Always set open to ensure it's open
           setIsOpen(true);
         }}
-        onMouseLeave={(e) => {
+        onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
           e.stopPropagation();
-          // Only close if we're not moving to the popover
-          const relatedTarget = e.relatedTarget as HTMLElement;
-          if (!relatedTarget || (!contentRef.current?.contains(relatedTarget) && !triggerRef.current?.contains(relatedTarget))) {
-            // Small delay to allow moving to popover
-            setTimeout(() => {
-              if (contentRef.current && !contentRef.current.matches(':hover') && triggerRef.current && !triggerRef.current.matches(':hover')) {
-                setIsOpen(false);
-              }
-            }, 150);
+          const relatedTarget = e.relatedTarget;
+          
+          // Check if we're moving to the content card - if so, do nothing
+          if (relatedTarget instanceof Node && contentRef.current?.contains(relatedTarget)) {
+            return;
           }
+          
+          // Don't set isHoveringRef to false immediately - wait to see if we're moving to content
+          // Clear any existing timeout
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+          }
+          
+          // Set a longer delay to allow moving to popover
+          timeoutRef.current = setTimeout(() => {
+            // Check if we're hovering over trigger or content
+            const isHoveringTrigger = triggerRef.current?.matches(':hover') || false;
+            const isHoveringContent = contentRef.current?.matches(':hover') || false;
+            
+            // Only close if we're truly not hovering over anything
+            if (!isHoveringTrigger && !isHoveringContent) {
+              isHoveringRef.current = false;
+              setIsOpen(false);
+            }
+            timeoutRef.current = null;
+          }, 400);
         }}
         className="relative w-full h-full"
         style={{ 
