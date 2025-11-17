@@ -42,6 +42,16 @@ import {
   Bot,
   Compass,
   Radio,
+  Tablet,
+  Watch,
+  Battery,
+  Camera,
+  Laptop,
+  Router,
+  Package,
+  CreditCard,
+  Image,
+  Music,
 } from "lucide-react";
 
 interface NavbarMenuProps {
@@ -313,6 +323,155 @@ export function NavbarMenu({ selectedPersona }: NavbarMenuProps) {
     { title: "Outage Advisor", description: "Is Optus down near you?", icon: <WifiOff className="w-4 h-4" /> },
   ];
 
+  // SHOP - Baseline Categories (Static)
+  const shopBaseline: MenuSection[] = [
+    {
+      title: "Phones",
+      items: [
+        { title: "All Phones", icon: <Smartphone className="w-4 h-4" /> },
+        { title: "iPhone", icon: <Smartphone className="w-4 h-4" /> },
+        { title: "Samsung Galaxy", icon: <Smartphone className="w-4 h-4" /> },
+        { title: "Google Pixel", icon: <Smartphone className="w-4 h-4" /> },
+        { title: "Refurbished Phones", icon: <RefreshCw className="w-4 h-4" /> },
+        { title: "Prepaid Phones", icon: <Smartphone className="w-4 h-4" /> },
+      ],
+    },
+    {
+      title: "Accessories",
+      items: [
+        { title: "Cases", icon: <Package className="w-4 h-4" /> },
+        { title: "Chargers & Cables", icon: <Zap className="w-4 h-4" /> },
+        { title: "Earbuds/Headphones", icon: <Headphones className="w-4 h-4" /> },
+        { title: "Wearables (Apple Watch, Galaxy Watch)", icon: <Watch className="w-4 h-4" /> },
+      ],
+    },
+    {
+      title: "Home & Internet",
+      items: [
+        { title: "Modems", icon: <Router className="w-4 h-4" /> },
+        { title: "Mesh WiFi", icon: <Wifi className="w-4 h-4" /> },
+        { title: "5G Internet Devices", icon: <Wifi className="w-4 h-4" /> },
+      ],
+    },
+    {
+      title: "Trade-In & Upgrade",
+      items: [
+        { title: "Device Trade-In", icon: <RefreshCw className="w-4 h-4" /> },
+        { title: "Upgrade Program", icon: <TrendingUp className="w-4 h-4" /> },
+      ],
+    },
+    {
+      title: "Tech & Entertainment",
+      items: [
+        { title: "Gaming Consoles", icon: <Gamepad2 className="w-4 h-4" /> },
+        { title: "Streaming Devices", icon: <Image className="w-4 h-4" /> },
+        { title: "Tablets & iPads", icon: <Tablet className="w-4 h-4" /> },
+      ],
+    },
+  ];
+
+  // SHOP - Persona-Aware Dynamic Sections
+  const shopPersonaModules: MenuSection[] = [];
+  
+  if (isGenZ) {
+    shopPersonaModules.push(
+      {
+        title: "Gen Z Picks",
+        items: [
+          { title: "Most Popular Phones Under $30/week", icon: <Smartphone className="w-4 h-4" />, badge: "Hot" },
+          { title: "Best Camera Phones for TikTok", icon: <Camera className="w-4 h-4" /> },
+          { title: "Budget-Friendly iPhones (Refurb)", icon: <Smartphone className="w-4 h-4" /> },
+          { title: "Student Accessory Bundles (cases + chargers)", icon: <Package className="w-4 h-4" /> },
+        ],
+      },
+      {
+        title: "Lifestyle Add-ons",
+        items: [
+          { title: "AirPods & Beats Deals", icon: <Headphones className="w-4 h-4" /> },
+          { title: "Portable Charging Kits", icon: <Battery className="w-4 h-4" /> },
+          { title: "Colourful Cases & Custom Skins", icon: <Package className="w-4 h-4" /> },
+        ],
+      }
+    );
+  }
+
+  if (isFamily) {
+    shopPersonaModules.push(
+      {
+        title: "Family Shopping Hub",
+        items: [
+          { title: "Kid-Friendly Phones (Durable Models)", icon: <Shield className="w-4 h-4" />, badge: "Durable" },
+          { title: "Best Phones for Parents (Battery + Camera)", icon: <Smartphone className="w-4 h-4" /> },
+          { title: "Tablets for Kids (Learning + Entertainment)", icon: <Tablet className="w-4 h-4" /> },
+          { title: "2–5 Line Device Bundles", icon: <Users className="w-4 h-4" />, badge: "Save" },
+        ],
+      },
+      {
+        title: "Family Safety Essentials",
+        items: [
+          { title: "Screen Protectors", icon: <Shield className="w-4 h-4" /> },
+          { title: "Cases for Kids", icon: <Package className="w-4 h-4" /> },
+          { title: "Device Insurance", icon: <Shield className="w-4 h-4" /> },
+          { title: "GPS Watches for Kids", icon: <Watch className="w-4 h-4" /> },
+        ],
+      }
+    );
+  }
+
+  if (isYP) {
+    shopPersonaModules.push(
+      {
+        title: "Young Pro Essentials",
+        items: [
+          { title: "Premium Phones (iPhone Pro, Galaxy Ultra)", icon: <Smartphone className="w-4 h-4" />, badge: "Premium" },
+          { title: "Work Accessories (Keyboards, Chargers)", icon: <Laptop className="w-4 h-4" /> },
+          { title: "Laptop Hotspot Devices", icon: <Wifi className="w-4 h-4" /> },
+          { title: "Noise-Cancelling Headphones", icon: <Headphones className="w-4 h-4" /> },
+        ],
+      },
+      {
+        title: "Travel Tech",
+        items: [
+          { title: "Universal Adapters", icon: <Zap className="w-4 h-4" /> },
+          { title: "Portable WiFi Modems", icon: <Router className="w-4 h-4" /> },
+          { title: "Dual SIM / eSIM Phones", icon: <Smartphone className="w-4 h-4" /> },
+        ],
+      }
+    );
+  }
+
+  if (isValue) {
+    shopPersonaModules.push(
+      {
+        title: "Best Value Devices",
+        items: [
+          { title: "Refurb Phones (Save up to 40%)", icon: <RefreshCw className="w-4 h-4" />, badge: "40% Off" },
+          { title: "Low-Cost Android Phones", icon: <Smartphone className="w-4 h-4" /> },
+          { title: "BYO Device Options", icon: <Smartphone className="w-4 h-4" /> },
+          { title: "Phones with Long Battery Life", icon: <Battery className="w-4 h-4" /> },
+        ],
+      },
+      {
+        title: "Switching Essentials",
+        items: [
+          { title: "Compare Your Current Phone Value", icon: <GitCompare className="w-4 h-4" /> },
+          { title: "Trade-In Boost Offers", icon: <TrendingUp className="w-4 h-4" /> },
+          { title: "Phones Under $500", icon: <DollarSign className="w-4 h-4" /> },
+          { title: "Budget Accessory Packs", icon: <Package className="w-4 h-4" /> },
+        ],
+      }
+    );
+  }
+
+  // SHOP - AI Shopping Shortcuts
+  const shopAIShortcuts = [
+    { title: "Device Finder", description: "Tell us your usage → We recommend 3 phones", icon: <Bot className="w-4 h-4" /> },
+    { title: "Camera/Gaming/Battery Filter Bot", description: "Find the best phone for: gaming / TikTok / travel / kids", icon: <Search className="w-4 h-4" /> },
+    { title: "Trade-In Price Estimator", description: "Get your estimated trade-in value instantly", icon: <Calculator className="w-4 h-4" /> },
+    { title: "Switch & Compare Device Tool", description: "Compare your current phone vs new ones", icon: <GitCompare className="w-4 h-4" /> },
+    { title: "Accessory Match AI", description: "Find cases and accessories that fit your device", icon: <Package className="w-4 h-4" /> },
+  ];
+
   // Dynamic Deal Radar - AI-generated personalized deals
   const getDealRadarContent = () => {
     if (!selectedPersona) return null;
@@ -469,6 +628,14 @@ export function NavbarMenu({ selectedPersona }: NavbarMenuProps) {
   return (
     <NavigationMenu>
       <NavigationMenuList>
+        {/* Shop */}
+        <NavigationMenuItem>
+          <NavigationMenuTrigger>Shop</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            {renderMenuContent(shopBaseline, shopPersonaModules, shopAIShortcuts)}
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+
         {/* Plans */}
         <NavigationMenuItem>
           <NavigationMenuTrigger>Plans</NavigationMenuTrigger>

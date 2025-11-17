@@ -46,16 +46,16 @@ export function Header({ selectedPersona, onPersonaChange }: HeaderProps) {
 
           {/* Primary Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <a
-              href="#shop"
-              className="text-foreground hover:text-[#00A9CE] transition-colors"
-            >
-              Shop
-            </a>
             {selectedPersona ? (
               <NavbarMenu selectedPersona={selectedPersona} />
             ) : (
               <>
+                <a
+                  href="#shop"
+                  className="text-foreground hover:text-[#00A9CE] transition-colors"
+                >
+                  Shop
+                </a>
                 <a
                   href="#plans"
                   className="text-foreground hover:text-[#00A9CE] transition-colors"
