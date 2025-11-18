@@ -7,9 +7,42 @@ import { NavbarMenu } from "./layout/NavbarMenu";
 interface HeaderProps {
   selectedPersona: string | null;
   onPersonaChange: (persona: string) => void;
+  onNavigate?: (action: string, params?: any) => void;
+  onOpenAIFinder?: () => void;
+  onOpenDealsRadar?: () => void;
+  onOpenCalculator?: () => void;
+  onOpenTravelAdvisor?: () => void;
+  onOpenCompare?: () => void;
+  onOpenRefurbCatalog?: () => void;
+  onOpenBYOChecker?: () => void;
+  onOpenPortingFlow?: () => void;
+  onViewDevices?: () => void;
+  onViewFamilyBuilder?: () => void;
+  onViewFamilyDevices?: () => void;
+  onViewYPDevices?: () => void;
+  onViewYPPlans?: () => void;
+  onViewYPTravel?: () => void;
 }
 
-export function Header({ selectedPersona, onPersonaChange }: HeaderProps) {
+export function Header({ 
+  selectedPersona, 
+  onPersonaChange,
+  onNavigate,
+  onOpenAIFinder,
+  onOpenDealsRadar,
+  onOpenCalculator,
+  onOpenTravelAdvisor,
+  onOpenCompare,
+  onOpenRefurbCatalog,
+  onOpenBYOChecker,
+  onOpenPortingFlow,
+  onViewDevices,
+  onViewFamilyBuilder,
+  onViewFamilyDevices,
+  onViewYPDevices,
+  onViewYPPlans,
+  onViewYPTravel,
+}: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-border">
       <div className="max-w-[1400px] mx-auto px-6">
@@ -47,7 +80,24 @@ export function Header({ selectedPersona, onPersonaChange }: HeaderProps) {
           {/* Primary Navigation */}
           <nav className="hidden md:flex items-center gap-8">
             {selectedPersona ? (
-              <NavbarMenu selectedPersona={selectedPersona} />
+              <NavbarMenu 
+                selectedPersona={selectedPersona}
+                onNavigate={onNavigate}
+                onOpenAIFinder={onOpenAIFinder}
+                onOpenDealsRadar={onOpenDealsRadar}
+                onOpenCalculator={onOpenCalculator}
+                onOpenTravelAdvisor={onOpenTravelAdvisor}
+                onOpenCompare={onOpenCompare}
+                onOpenRefurbCatalog={onOpenRefurbCatalog}
+                onOpenBYOChecker={onOpenBYOChecker}
+                onOpenPortingFlow={onOpenPortingFlow}
+                onViewDevices={onViewDevices}
+                onViewFamilyBuilder={onViewFamilyBuilder}
+                onViewFamilyDevices={onViewFamilyDevices}
+                onViewYPDevices={onViewYPDevices}
+                onViewYPPlans={onViewYPPlans}
+                onViewYPTravel={onViewYPTravel}
+              />
             ) : (
               <>
                 <a

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sparkles, Zap, Gamepad2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { DiscoveryCarousel } from "./DiscoveryCarousel";
@@ -19,11 +19,43 @@ interface GenZHomeProps {
   onCompareDevices: (devices: Device[]) => void;
   gamingMode?: boolean;
   onGamingModeChange?: (active: boolean) => void;
+  initialFilter?: { brand?: string; type?: string; category?: string };
+  clearFilters?: boolean;
 }
 
-export function GenZHome({ onViewDevice, onCompareDevices, gamingMode: externalGamingMode, onGamingModeChange }: GenZHomeProps) {
+export function GenZHome({ onViewDevice, onCompareDevices, gamingMode: externalGamingMode, onGamingModeChange, initialFilter, clearFilters }: GenZHomeProps) {
   const [showFinder, setShowFinder] = useState(false);
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
+
+  // Apply initial filter when component mounts or filter changes
+  useEffect(() => {
+    if (clearFilters) {
+      setActiveFilters([]);
+      setAiResults([]);
+    }
+  }, [clearFilters]);
+
+  useEffect(() => {
+    if (initialFilter && !clearFilters) {
+      const newFilters: string[] = [];
+      if (initialFilter.brand) {
+        // Map brand to filter
+        if (initialFilter.brand === "iPhone") {
+          newFilters.push("iphone");
+        } else if (initialFilter.brand === "Samsung") {
+          newFilters.push("samsung");
+        } else if (initialFilter.brand === "Google") {
+          newFilters.push("google");
+        }
+      }
+      if (initialFilter.type === "prepaid") {
+        newFilters.push("prepaid");
+      }
+      if (newFilters.length > 0) {
+        setActiveFilters(newFilters);
+      }
+    }
+  }, [initialFilter, clearFilters]);
   const [compareDevices, setCompareDevices] = useState<Device[]>([]);
   const [aiResults, setAiResults] = useState<Device[]>([]);
   const [gamingMode, setGamingMode] = useState(externalGamingMode || false);
@@ -115,8 +147,16 @@ export function GenZHome({ onViewDevice, onCompareDevices, gamingMode: externalG
     }
 
     return devices.filter((device) => {
+      // Check brand filters first (most specific)
+      const brandMatch = 
+        activeFilters.includes("iphone") ? device.name.toLowerCase().includes("iphone") :
+        activeFilters.includes("samsung") ? device.name.toLowerCase().includes("samsung") :
+        activeFilters.includes("google") ? device.name.toLowerCase().includes("pixel") :
+        !activeFilters.some(f => ["iphone", "samsung", "google"].includes(f));
+
       // Check category filters
       const categoryMatch = activeFilters.some((filter) =>
+        !["iphone", "samsung", "google", "prepaid", "under-50", "under-40", "under-60"].includes(filter) &&
         device.category.includes(filter)
       );
 
@@ -127,7 +167,18 @@ export function GenZHome({ onViewDevice, onCompareDevices, gamingMode: externalG
         activeFilters.includes("under-60") ? device.price36 <= 60 :
         true;
 
-      return categoryMatch || priceMatch;
+      // Check type filters
+      const typeMatch = 
+        activeFilters.includes("prepaid") ? true : // For now, show all for prepaid
+        true;
+
+      // If brand filter is active, it must match AND other filters
+      if (activeFilters.some(f => ["iphone", "samsung", "google"].includes(f))) {
+        return brandMatch && (categoryMatch || priceMatch || typeMatch || activeFilters.length === 1);
+      }
+
+      // Otherwise, check category or price filters
+      return (categoryMatch || priceMatch || typeMatch) || activeFilters.length === 0;
     });
   };
 
@@ -304,7 +355,7 @@ export function GenZHome({ onViewDevice, onCompareDevices, gamingMode: externalG
         <InsightsBar gamingMode={gamingMode} />
 
         {/* All Phones for You */}
-        <div>
+        <div data-devices-section>
           <h2 className="mb-6">
             {aiResults.length > 0
               ? "Your AI Recommendations"

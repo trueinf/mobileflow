@@ -25,6 +25,7 @@ import { RefurbDetail } from "./components/valueswitcher/RefurbDetail";
 import { CompareProviders } from "./components/valueswitcher/CompareProviders";
 import { BYOChecker } from "./components/valueswitcher/BYOChecker";
 import { PortingFlow } from "./components/valueswitcher/PortingFlow";
+import { AIPhoneFinder } from "./components/AIPhoneFinder";
 import { Device } from "./types/device";
 import { plans } from "./data/devices";
 import { Toaster } from "./components/ui/sonner";
@@ -49,6 +50,9 @@ export default function App() {
   const [selectedRefurbDevice, setSelectedRefurbDevice] = useState<RefurbDevice | null>(null);
   const [compareDevices, setCompareDevices] = useState<Device[]>([]);
   const [gamingMode, setGamingMode] = useState(false);
+  const [showAIFinder, setShowAIFinder] = useState(false);
+  const [deviceFilter, setDeviceFilter] = useState<{ brand?: string; type?: string; category?: string } | null>(null);
+  const [clearFilters, setClearFilters] = useState(false);
   const { addDevice } = useFamilyStore();
   const { setSelectedDevice: setYPDevice } = useYoungProStore();
   const { setRefurbDevice } = useValueStore();
@@ -152,6 +156,149 @@ export default function App() {
       <Header
         selectedPersona={selectedPersona}
         onPersonaChange={setSelectedPersona}
+        onNavigate={(action, params) => {
+          // Handle navigation actions
+          if (action === "filter") {
+            // Navigate to devices with filters
+            if (selectedPersona === "gen-z") {
+              setClearFilters(false);
+              setDeviceFilter(params || {});
+              setCurrentView("home");
+              // Scroll to devices section
+              setTimeout(() => {
+                const devicesSection = document.querySelector('[data-devices-section]');
+                if (devicesSection) {
+                  devicesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }, 100);
+            } else if (selectedPersona === "families") {
+              setFamilyView("devices");
+            } else if (selectedPersona === "young-pros") {
+              setYPView("devices");
+            } else if (selectedPersona === "value-switchers") {
+              setValueView("refurb");
+            }
+          } else if (action === "category") {
+            // Navigate to category (for now, just show message or navigate to home)
+            if (selectedPersona === "gen-z") {
+              setCurrentView("home");
+              // Show a toast or message about category
+              setTimeout(() => {
+                const devicesSection = document.querySelector('[data-devices-section]');
+                if (devicesSection) {
+                  devicesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }, 100);
+            } else if (selectedPersona === "families") {
+              setFamilyView("devices");
+            } else if (selectedPersona === "young-pros") {
+              setYPView("devices");
+            }
+          } else if (action === "trade-in") {
+            // Navigate to trade-in flow
+            if (selectedPersona === "value-switchers") {
+              setValueView("refurb");
+            } else {
+              // For other personas, show a message or navigate appropriately
+              setCurrentView("home");
+            }
+          } else if (action === "upgrade") {
+            // Navigate to upgrade program
+            setCurrentView("home");
+          } else if (action === "accessories") {
+            // Navigate to accessories (for now, just show home)
+            setCurrentView("home");
+          }
+        }}
+        onOpenAIFinder={() => setShowAIFinder(true)}
+        onOpenDealsRadar={() => {
+          if (selectedPersona === "value-switchers") {
+            setValueView("deals");
+          }
+        }}
+        onOpenCalculator={() => {
+          if (selectedPersona === "value-switchers") {
+            setValueView("calculator");
+          }
+        }}
+        onOpenTravelAdvisor={() => {
+          if (selectedPersona === "young-pros") {
+            setYPView("travel");
+          }
+        }}
+        onOpenCompare={() => {
+          if (selectedPersona === "gen-z") {
+            setCurrentView("compare");
+          } else if (selectedPersona === "value-switchers") {
+            setValueView("compare");
+          }
+        }}
+        onOpenRefurbCatalog={() => {
+          if (selectedPersona === "value-switchers") {
+            setValueView("refurb");
+          }
+        }}
+        onOpenBYOChecker={() => {
+          if (selectedPersona === "value-switchers") {
+            setValueView("byo");
+          }
+        }}
+        onOpenPortingFlow={() => {
+          if (selectedPersona === "value-switchers") {
+            setValueView("porting");
+          }
+        }}
+        onViewDevices={(shouldClearFilters) => {
+          if (selectedPersona === "gen-z") {
+            if (shouldClearFilters) {
+              setClearFilters(true);
+              setDeviceFilter(null);
+              // Reset clearFilters after a brief delay
+              setTimeout(() => setClearFilters(false), 200);
+            } else {
+              setClearFilters(false);
+            }
+            setCurrentView("home");
+            // Scroll to devices section after a brief delay
+            setTimeout(() => {
+              const devicesSection = document.querySelector('[data-devices-section]');
+              if (devicesSection) {
+                devicesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }, 100);
+          } else if (selectedPersona === "families") {
+            setFamilyView("devices");
+          } else if (selectedPersona === "young-pros") {
+            setYPView("devices");
+          } else if (selectedPersona === "value-switchers") {
+            setValueView("refurb");
+          }
+        }}
+        onViewFamilyBuilder={() => {
+          if (selectedPersona === "families") {
+            setFamilyView("builder");
+          }
+        }}
+        onViewFamilyDevices={() => {
+          if (selectedPersona === "families") {
+            setFamilyView("devices");
+          }
+        }}
+        onViewYPDevices={() => {
+          if (selectedPersona === "young-pros") {
+            setYPView("devices");
+          }
+        }}
+        onViewYPPlans={() => {
+          if (selectedPersona === "young-pros") {
+            setYPView("plans");
+          }
+        }}
+        onViewYPTravel={() => {
+          if (selectedPersona === "young-pros") {
+            setYPView("travel");
+          }
+        }}
       />
 
       {/* Main Content Area - Route based on current view */}
@@ -161,6 +308,8 @@ export default function App() {
           onCompareDevices={handleCompareDevices}
           gamingMode={gamingMode}
           onGamingModeChange={setGamingMode}
+          initialFilter={deviceFilter || undefined}
+          clearFilters={clearFilters}
         />
       )}
 
@@ -360,6 +509,23 @@ export default function App() {
           onBack={() => setCurrentView("device-detail")}
         />
       )}
+
+      {/* Global AI Phone Finder Modal */}
+      <AIPhoneFinder
+        isOpen={showAIFinder}
+        onClose={() => setShowAIFinder(false)}
+        onResults={(results) => {
+          // Handle AI finder results - navigate to devices
+          if (selectedPersona === "gen-z") {
+            setCurrentView("home");
+          } else if (selectedPersona === "families") {
+            setFamilyView("devices");
+          } else if (selectedPersona === "young-pros") {
+            setYPView("devices");
+          }
+          setShowAIFinder(false);
+        }}
+      />
     </div>
   );
 }

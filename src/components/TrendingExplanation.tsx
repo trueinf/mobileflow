@@ -245,12 +245,12 @@ export function TrendingExplanation({ device, children }: TrendingExplanationPro
 
               {/* Neo4j Graph Visualization */}
               <Card className="p-3 mb-3 bg-gradient-to-br from-[#00A9CE]/5 via-purple-50/50 to-blue-50/50 border border-[#00A9CE]/20 rounded-xl overflow-hidden">
-                <div className="relative h-[140px] rounded-lg overflow-hidden bg-gradient-to-br from-[#00A9CE]/10 via-purple-100/30 to-blue-100/30 flex items-center justify-center">
-                  {/* Neo4j Graph Visualization - SVG representation */}
+                <div className="relative h-[160px] rounded-lg overflow-hidden bg-gradient-to-br from-[#00A9CE]/10 via-purple-100/30 to-blue-100/30 flex items-center justify-center">
+                  {/* Neo4j Graph Visualization - Enhanced SVG representation */}
                   <svg
                     width="100%"
                     height="100%"
-                    viewBox="0 0 300 140"
+                    viewBox="0 0 320 160"
                     className="absolute inset-0"
                   >
                     <defs>
@@ -270,41 +270,138 @@ export function TrendingExplanation({ device, children }: TrendingExplanationPro
                         <stop offset="0%" stopColor="#10B981" />
                         <stop offset="100%" stopColor="#059669" />
                       </linearGradient>
+                      <linearGradient id="feature-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#F59E0B" />
+                        <stop offset="100%" stopColor="#D97706" />
+                      </linearGradient>
+                      <linearGradient id="pattern-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#EF4444" />
+                        <stop offset="100%" stopColor="#DC2626" />
+                      </linearGradient>
+                      {/* Animated pulse for connections */}
+                      <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#00A9CE" opacity="0.6" />
+                      </marker>
                     </defs>
                     
-                    {/* Graph nodes and connections */}
-                    {/* Device Node (Center) */}
-                    <circle cx="150" cy="70" r="18" fill="url(#device-gradient)" stroke="white" strokeWidth="2.5" filter="drop-shadow(0 2px 4px rgba(0,169,206,0.3))" />
-                    <text x="150" y="75" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">Device</text>
+                    {/* Animated connection lines */}
+                    <motion.g
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      {/* Connection: Gen Z -> Device */}
+                      <line x1="90" y1="40" x2="140" y2="65" stroke="#9333EA" strokeWidth="2" strokeDasharray="3,2" opacity="0.6" markerEnd="url(#arrowhead)">
+                        <animate attributeName="stroke-dashoffset" values="0;5" dur="2s" repeatCount="indefinite" />
+                      </line>
+                      
+                      {/* Connection: Trending -> Device */}
+                      <line x1="230" y1="40" x2="180" y2="65" stroke="#10B981" strokeWidth="2" strokeDasharray="3,2" opacity="0.6" markerEnd="url(#arrowhead)">
+                        <animate attributeName="stroke-dashoffset" values="0;5" dur="2s" repeatCount="indefinite" />
+                      </line>
+                      
+                      {/* Connection: Features -> Device */}
+                      <line x1="70" y1="115" x2="135" y2="85" stroke="#F59E0B" strokeWidth="1.5" strokeDasharray="2,2" opacity="0.5" />
+                      <line x1="250" y1="115" x2="165" y2="85" stroke="#EF4444" strokeWidth="1.5" strokeDasharray="2,2" opacity="0.5" />
+                      <line x1="160" y1="125" x2="160" y2="95" stroke="#8B5CF6" strokeWidth="1.5" strokeDasharray="2,2" opacity="0.5" />
+                      
+                      {/* Connection: Gen Z -> Features */}
+                      <line x1="85" y1="50" x2="65" y2="105" stroke="#9333EA" strokeWidth="1" strokeDasharray="1,1" opacity="0.4" />
+                      <line x1="95" y1="50" x2="155" y2="115" stroke="#9333EA" strokeWidth="1" strokeDasharray="1,1" opacity="0.4" />
+                    </motion.g>
+                    
+                    {/* Graph nodes with animation */}
+                    {/* Device Node (Center) - Main Hub */}
+                    <motion.g
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+                    >
+                      <circle cx="160" cy="80" r="20" fill="url(#device-gradient)" stroke="white" strokeWidth="3" filter="drop-shadow(0 3px 6px rgba(0,169,206,0.4))" />
+                      <text x="160" y="85" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">Device</text>
+                    </motion.g>
                     
                     {/* User Preference Nodes */}
-                    <circle cx="80" cy="35" r="14" fill="url(#genz-gradient)" stroke="white" strokeWidth="2" filter="drop-shadow(0 2px 4px rgba(147,51,234,0.3))" />
-                    <text x="80" y="39" textAnchor="middle" fill="white" fontSize="9" fontWeight="600">Gen Z</text>
-                    <line x1="94" y1="42" x2="135" y2="60" stroke="#9333EA" strokeWidth="2" strokeDasharray="2,2" opacity="0.7" />
+                    <motion.g
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ type: "spring", stiffness: 200, delay: 0.3 }}
+                    >
+                      <circle cx="80" cy="35" r="16" fill="url(#genz-gradient)" stroke="white" strokeWidth="2.5" filter="drop-shadow(0 2px 4px rgba(147,51,234,0.4))" />
+                      <text x="80" y="39" textAnchor="middle" fill="white" fontSize="10" fontWeight="600">Gen Z</text>
+                    </motion.g>
                     
-                    <circle cx="220" cy="35" r="14" fill="url(#trending-gradient)" stroke="white" strokeWidth="2" filter="drop-shadow(0 2px 4px rgba(16,185,129,0.3))" />
-                    <text x="220" y="39" textAnchor="middle" fill="white" fontSize="9" fontWeight="600">Trending</text>
-                    <line x1="206" y1="42" x2="165" y2="60" stroke="#10B981" strokeWidth="2" strokeDasharray="2,2" opacity="0.7" />
+                    <motion.g
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ type: "spring", stiffness: 200, delay: 0.4 }}
+                    >
+                      <circle cx="240" cy="35" r="16" fill="url(#trending-gradient)" stroke="white" strokeWidth="2.5" filter="drop-shadow(0 2px 4px rgba(16,185,129,0.4))" />
+                      <text x="240" y="39" textAnchor="middle" fill="white" fontSize="10" fontWeight="600">Trending</text>
+                    </motion.g>
                     
                     {/* Feature Nodes */}
-                    <circle cx="60" cy="110" r="12" fill="#F59E0B" stroke="white" strokeWidth="2" filter="drop-shadow(0 2px 4px rgba(245,158,11,0.3))" />
-                    <text x="60" y="114" textAnchor="middle" fill="white" fontSize="8" fontWeight="600">120Hz</text>
-                    <line x1="72" y1="105" x2="138" y2="82" stroke="#F59E0B" strokeWidth="1.5" opacity="0.6" />
+                    <motion.g
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ type: "spring", stiffness: 200, delay: 0.5 }}
+                    >
+                      <circle cx="60" cy="120" r="13" fill="url(#feature-gradient)" stroke="white" strokeWidth="2" filter="drop-shadow(0 2px 4px rgba(245,158,11,0.4))" />
+                      <text x="60" y="124" textAnchor="middle" fill="white" fontSize="9" fontWeight="600">120Hz</text>
+                    </motion.g>
                     
-                    <circle cx="240" cy="110" r="12" fill="#EF4444" stroke="white" strokeWidth="2" filter="drop-shadow(0 2px 4px rgba(239,68,68,0.3))" />
-                    <text x="240" y="114" textAnchor="middle" fill="white" fontSize="8" fontWeight="600">Camera</text>
-                    <line x1="228" y1="105" x2="162" y2="82" stroke="#EF4444" strokeWidth="1.5" opacity="0.6" />
+                    <motion.g
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ type: "spring", stiffness: 200, delay: 0.6 }}
+                    >
+                      <circle cx="160" cy="130" r="13" fill="#8B5CF6" stroke="white" strokeWidth="2" filter="drop-shadow(0 2px 4px rgba(139,92,246,0.4))" />
+                      <text x="160" y="134" textAnchor="middle" fill="white" fontSize="9" fontWeight="600">Gaming</text>
+                    </motion.g>
                     
-                    {/* Relationship labels */}
-                    <text x="110" y="50" fill="#9333EA" fontSize="7" fontWeight="600" opacity="0.8">PREFERS</text>
-                    <text x="190" y="50" fill="#10B981" fontSize="7" fontWeight="600" opacity="0.8">TRENDING</text>
+                    <motion.g
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ type: "spring", stiffness: 200, delay: 0.7 }}
+                    >
+                      <circle cx="260" cy="120" r="13" fill="url(#pattern-gradient)" stroke="white" strokeWidth="2" filter="drop-shadow(0 2px 4px rgba(239,68,68,0.4))" />
+                      <text x="260" y="124" textAnchor="middle" fill="white" fontSize="9" fontWeight="600">Camera</text>
+                    </motion.g>
+                    
+                    {/* Relationship labels with animation */}
+                    <motion.g
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.8 }}
+                    >
+                      <text x="110" y="50" fill="#9333EA" fontSize="8" fontWeight="700" opacity="0.9">PREFERS</text>
+                    </motion.g>
+                    <motion.g
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.9 }}
+                    >
+                      <text x="200" y="50" fill="#10B981" fontSize="8" fontWeight="700" opacity="0.9">TRENDING</text>
+                    </motion.g>
+                    <motion.g
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 1.0 }}
+                    >
+                      <text x="155" y="110" fill="#8B5CF6" fontSize="7" fontWeight="600" opacity="0.8">HAS</text>
+                    </motion.g>
                   </svg>
                   
-                  <div className="absolute bottom-1.5 left-1.5 right-1.5 z-10">
+                  <div className="absolute bottom-2 left-2 right-2 z-10 flex items-center justify-between">
                     <Badge className="bg-gradient-to-r from-[#00A9CE] to-purple-600 text-white text-xs px-2 py-0.5 shadow-md">
                       <Network className="w-2.5 h-2.5 mr-1" />
                       Neo4j Graph
                     </Badge>
+                    <div className="flex gap-1">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#9333EA] animate-pulse"></div>
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#00A9CE] animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                    </div>
                   </div>
                 </div>
               </Card>
@@ -335,7 +432,7 @@ export function TrendingExplanation({ device, children }: TrendingExplanationPro
                 </div>
 
                 <div className="pt-2 border-t border-gray-200">
-                  <p className="text-[10px] text-gray-500 leading-relaxed">
+                  <p className="text-xs text-gray-500 leading-relaxed">
                     <span className="font-bold text-[#00A9CE]">Neo4j</span> analyzes relationships between user preferences, device features, and trending patterns to match Gen Z interests.
                   </p>
                 </div>

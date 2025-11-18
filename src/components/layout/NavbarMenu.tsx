@@ -57,6 +57,21 @@ import {
 
 interface NavbarMenuProps {
   selectedPersona: string | null;
+  onNavigate?: (action: string, params?: any) => void;
+  onOpenAIFinder?: () => void;
+  onOpenDealsRadar?: () => void;
+  onOpenCalculator?: () => void;
+  onOpenTravelAdvisor?: () => void;
+  onOpenCompare?: () => void;
+  onOpenRefurbCatalog?: () => void;
+  onOpenBYOChecker?: () => void;
+  onOpenPortingFlow?: () => void;
+  onViewDevices?: (clearFilters?: boolean) => void;
+  onViewFamilyBuilder?: () => void;
+  onViewFamilyDevices?: () => void;
+  onViewYPDevices?: () => void;
+  onViewYPPlans?: () => void;
+  onViewYPTravel?: () => void;
 }
 
 interface MenuItem {
@@ -73,7 +88,24 @@ interface MenuSection {
   items: MenuItem[];
 }
 
-export function NavbarMenu({ selectedPersona }: NavbarMenuProps) {
+export function NavbarMenu({ 
+  selectedPersona,
+  onNavigate,
+  onOpenAIFinder,
+  onOpenDealsRadar,
+  onOpenCalculator,
+  onOpenTravelAdvisor,
+  onOpenCompare,
+  onOpenRefurbCatalog,
+  onOpenBYOChecker,
+  onOpenPortingFlow,
+  onViewDevices,
+  onViewFamilyBuilder,
+  onViewFamilyDevices,
+  onViewYPDevices,
+  onViewYPPlans,
+  onViewYPTravel,
+}: NavbarMenuProps) {
   const isGenZ = selectedPersona === "gen-z";
   const isFamily = selectedPersona === "families";
   const isYP = selectedPersona === "young-pros";
@@ -306,15 +338,15 @@ export function NavbarMenu({ selectedPersona }: NavbarMenuProps) {
 
   // AI Shortcuts
   const plansAIShortcuts = [
-    { title: "Plan Finder", description: "Tell us your usage → we match the best plan", icon: <Bot className="w-4 h-4" /> },
-    { title: "Switching Assistant", description: "See your savings if you switch now", icon: <GitCompare className="w-4 h-4" /> },
-    { title: "Travel Planner", description: "Going overseas? Get roaming recommendations", icon: <Plane className="w-4 h-4" /> },
+    { title: "Plan Finder", description: "Tell us your usage → we match the best plan", icon: <Bot className="w-4 h-4" />, onClick: () => onNavigate?.("plan-finder") },
+    { title: "Switching Assistant", description: "See your savings if you switch now", icon: <GitCompare className="w-4 h-4" />, onClick: () => onOpenCompare?.() },
+    { title: "Travel Planner", description: "Going overseas? Get roaming recommendations", icon: <Plane className="w-4 h-4" />, onClick: () => onOpenTravelAdvisor?.() },
   ];
 
   const dealsAIShortcuts = [
-    { title: "Deal Radar", description: "Top 3 deals for you today", icon: <Sparkles className="w-4 h-4" /> },
-    { title: "Savings Calculator", description: "Your potential savings: ~$X/mo", icon: <Calculator className="w-4 h-4" /> },
-    { title: "Ending Soon", description: "Limited time offers expiring soon", icon: <AlertCircle className="w-4 h-4" /> },
+    { title: "Deal Radar", description: "Top 3 deals for you today", icon: <Sparkles className="w-4 h-4" />, onClick: () => onOpenDealsRadar?.() },
+    { title: "Savings Calculator", description: "Your potential savings: ~$X/mo", icon: <Calculator className="w-4 h-4" />, onClick: () => onOpenCalculator?.() },
+    { title: "Ending Soon", description: "Limited time offers expiring soon", icon: <AlertCircle className="w-4 h-4" />, onClick: () => onOpenDealsRadar?.() },
   ];
 
   const supportAIShortcuts = [
@@ -329,44 +361,44 @@ export function NavbarMenu({ selectedPersona }: NavbarMenuProps) {
     {
       title: "Phones",
       items: [
-        { title: "All Phones", icon: <Smartphone className="w-4 h-4" /> },
-        { title: "iPhone", icon: <Smartphone className="w-4 h-4" /> },
-        { title: "Samsung Galaxy", icon: <Smartphone className="w-4 h-4" /> },
-        { title: "Google Pixel", icon: <Smartphone className="w-4 h-4" /> },
-        { title: "Refurbished Phones", icon: <RefreshCw className="w-4 h-4" /> },
-        { title: "Prepaid Phones", icon: <Smartphone className="w-4 h-4" /> },
+        { title: "All Phones", icon: <Smartphone className="w-4 h-4" />, onClick: () => onViewDevices?.(true) },
+        { title: "iPhone", icon: <Smartphone className="w-4 h-4" />, onClick: () => onNavigate?.("filter", { brand: "iPhone" }) },
+        { title: "Samsung Galaxy", icon: <Smartphone className="w-4 h-4" />, onClick: () => onNavigate?.("filter", { brand: "Samsung" }) },
+        { title: "Google Pixel", icon: <Smartphone className="w-4 h-4" />, onClick: () => onNavigate?.("filter", { brand: "Google" }) },
+        { title: "Refurbished Phones", icon: <RefreshCw className="w-4 h-4" />, onClick: () => onOpenRefurbCatalog?.() },
+        { title: "Prepaid Phones", icon: <Smartphone className="w-4 h-4" />, onClick: () => onNavigate?.("filter", { type: "prepaid" }) },
       ],
     },
     {
       title: "Accessories",
       items: [
-        { title: "Cases", icon: <Package className="w-4 h-4" /> },
-        { title: "Chargers & Cables", icon: <Zap className="w-4 h-4" /> },
-        { title: "Earbuds/Headphones", icon: <Headphones className="w-4 h-4" /> },
-        { title: "Wearables (Apple Watch, Galaxy Watch)", icon: <Watch className="w-4 h-4" /> },
+        { title: "Cases", icon: <Package className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "cases" }) },
+        { title: "Chargers & Cables", icon: <Zap className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "chargers" }) },
+        { title: "Earbuds/Headphones", icon: <Headphones className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "headphones" }) },
+        { title: "Wearables (Apple Watch, Galaxy Watch)", icon: <Watch className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "wearables" }) },
       ],
     },
     {
       title: "Home & Internet",
       items: [
-        { title: "Modems", icon: <Router className="w-4 h-4" /> },
-        { title: "Mesh WiFi", icon: <Wifi className="w-4 h-4" /> },
-        { title: "5G Internet Devices", icon: <Wifi className="w-4 h-4" /> },
+        { title: "Modems", icon: <Router className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "modems" }) },
+        { title: "Mesh WiFi", icon: <Wifi className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "mesh-wifi" }) },
+        { title: "5G Internet Devices", icon: <Wifi className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "5g-internet" }) },
       ],
     },
     {
       title: "Trade-In & Upgrade",
       items: [
-        { title: "Device Trade-In", icon: <RefreshCw className="w-4 h-4" /> },
-        { title: "Upgrade Program", icon: <TrendingUp className="w-4 h-4" /> },
+        { title: "Device Trade-In", icon: <RefreshCw className="w-4 h-4" />, onClick: () => onNavigate?.("trade-in") },
+        { title: "Upgrade Program", icon: <TrendingUp className="w-4 h-4" />, onClick: () => onNavigate?.("upgrade") },
       ],
     },
     {
       title: "Tech & Entertainment",
       items: [
-        { title: "Gaming Consoles", icon: <Gamepad2 className="w-4 h-4" /> },
-        { title: "Streaming Devices", icon: <Image className="w-4 h-4" /> },
-        { title: "Tablets & iPads", icon: <Tablet className="w-4 h-4" /> },
+        { title: "Gaming Consoles", icon: <Gamepad2 className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "gaming" }) },
+        { title: "Streaming Devices", icon: <Image className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "streaming" }) },
+        { title: "Tablets & iPads", icon: <Tablet className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "tablets" }) },
       ],
     },
   ];
@@ -379,18 +411,18 @@ export function NavbarMenu({ selectedPersona }: NavbarMenuProps) {
       {
         title: "Gen Z Picks",
         items: [
-          { title: "Most Popular Phones Under $30/week", icon: <Smartphone className="w-4 h-4" />, badge: "Hot" },
-          { title: "Best Camera Phones for TikTok", icon: <Camera className="w-4 h-4" /> },
-          { title: "Budget-Friendly iPhones (Refurb)", icon: <Smartphone className="w-4 h-4" /> },
-          { title: "Student Accessory Bundles (cases + chargers)", icon: <Package className="w-4 h-4" /> },
+          { title: "Most Popular Phones Under $30/week", icon: <Smartphone className="w-4 h-4" />, badge: "Hot", onClick: () => onViewDevices?.() },
+          { title: "Best Camera Phones for TikTok", icon: <Camera className="w-4 h-4" />, onClick: () => onNavigate?.("filter", { feature: "camera" }) },
+          { title: "Budget-Friendly iPhones (Refurb)", icon: <Smartphone className="w-4 h-4" />, onClick: () => onOpenRefurbCatalog?.() },
+          { title: "Student Accessory Bundles (cases + chargers)", icon: <Package className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "accessories" }) },
         ],
       },
       {
         title: "Lifestyle Add-ons",
         items: [
-          { title: "AirPods & Beats Deals", icon: <Headphones className="w-4 h-4" /> },
-          { title: "Portable Charging Kits", icon: <Battery className="w-4 h-4" /> },
-          { title: "Colourful Cases & Custom Skins", icon: <Package className="w-4 h-4" /> },
+          { title: "AirPods & Beats Deals", icon: <Headphones className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "headphones" }) },
+          { title: "Portable Charging Kits", icon: <Battery className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "chargers" }) },
+          { title: "Colourful Cases & Custom Skins", icon: <Package className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "cases" }) },
         ],
       }
     );
@@ -401,19 +433,19 @@ export function NavbarMenu({ selectedPersona }: NavbarMenuProps) {
       {
         title: "Family Shopping Hub",
         items: [
-          { title: "Kid-Friendly Phones (Durable Models)", icon: <Shield className="w-4 h-4" />, badge: "Durable" },
-          { title: "Best Phones for Parents (Battery + Camera)", icon: <Smartphone className="w-4 h-4" /> },
-          { title: "Tablets for Kids (Learning + Entertainment)", icon: <Tablet className="w-4 h-4" /> },
-          { title: "2–5 Line Device Bundles", icon: <Users className="w-4 h-4" />, badge: "Save" },
+          { title: "Kid-Friendly Phones (Durable Models)", icon: <Shield className="w-4 h-4" />, badge: "Durable", onClick: () => onViewFamilyDevices?.() },
+          { title: "Best Phones for Parents (Battery + Camera)", icon: <Smartphone className="w-4 h-4" />, onClick: () => onViewFamilyDevices?.() },
+          { title: "Tablets for Kids (Learning + Entertainment)", icon: <Tablet className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "tablets" }) },
+          { title: "2–5 Line Device Bundles", icon: <Users className="w-4 h-4" />, badge: "Save", onClick: () => onViewFamilyBuilder?.() },
         ],
       },
       {
         title: "Family Safety Essentials",
         items: [
-          { title: "Screen Protectors", icon: <Shield className="w-4 h-4" /> },
-          { title: "Cases for Kids", icon: <Package className="w-4 h-4" /> },
-          { title: "Device Insurance", icon: <Shield className="w-4 h-4" /> },
-          { title: "GPS Watches for Kids", icon: <Watch className="w-4 h-4" /> },
+          { title: "Screen Protectors", icon: <Shield className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "screen-protectors" }) },
+          { title: "Cases for Kids", icon: <Package className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "cases" }) },
+          { title: "Device Insurance", icon: <Shield className="w-4 h-4" />, onClick: () => onNavigate?.("insurance") },
+          { title: "GPS Watches for Kids", icon: <Watch className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "wearables" }) },
         ],
       }
     );
@@ -424,18 +456,18 @@ export function NavbarMenu({ selectedPersona }: NavbarMenuProps) {
       {
         title: "Young Pro Essentials",
         items: [
-          { title: "Premium Phones (iPhone Pro, Galaxy Ultra)", icon: <Smartphone className="w-4 h-4" />, badge: "Premium" },
-          { title: "Work Accessories (Keyboards, Chargers)", icon: <Laptop className="w-4 h-4" /> },
-          { title: "Laptop Hotspot Devices", icon: <Wifi className="w-4 h-4" /> },
-          { title: "Noise-Cancelling Headphones", icon: <Headphones className="w-4 h-4" /> },
+          { title: "Premium Phones (iPhone Pro, Galaxy Ultra)", icon: <Smartphone className="w-4 h-4" />, badge: "Premium", onClick: () => onViewYPDevices?.() },
+          { title: "Work Accessories (Keyboards, Chargers)", icon: <Laptop className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "work-accessories" }) },
+          { title: "Laptop Hotspot Devices", icon: <Wifi className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "hotspot" }) },
+          { title: "Noise-Cancelling Headphones", icon: <Headphones className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "headphones" }) },
         ],
       },
       {
         title: "Travel Tech",
         items: [
-          { title: "Universal Adapters", icon: <Zap className="w-4 h-4" /> },
-          { title: "Portable WiFi Modems", icon: <Router className="w-4 h-4" /> },
-          { title: "Dual SIM / eSIM Phones", icon: <Smartphone className="w-4 h-4" /> },
+          { title: "Universal Adapters", icon: <Zap className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "adapters" }) },
+          { title: "Portable WiFi Modems", icon: <Router className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "modems" }) },
+          { title: "Dual SIM / eSIM Phones", icon: <Smartphone className="w-4 h-4" />, onClick: () => onViewYPDevices?.() },
         ],
       }
     );
@@ -446,19 +478,19 @@ export function NavbarMenu({ selectedPersona }: NavbarMenuProps) {
       {
         title: "Best Value Devices",
         items: [
-          { title: "Refurb Phones (Save up to 40%)", icon: <RefreshCw className="w-4 h-4" />, badge: "40% Off" },
-          { title: "Low-Cost Android Phones", icon: <Smartphone className="w-4 h-4" /> },
-          { title: "BYO Device Options", icon: <Smartphone className="w-4 h-4" /> },
-          { title: "Phones with Long Battery Life", icon: <Battery className="w-4 h-4" /> },
+          { title: "Refurb Phones (Save up to 40%)", icon: <RefreshCw className="w-4 h-4" />, badge: "40% Off", onClick: () => onOpenRefurbCatalog?.() },
+          { title: "Low-Cost Android Phones", icon: <Smartphone className="w-4 h-4" />, onClick: () => onNavigate?.("filter", { brand: "Android", price: "low" }) },
+          { title: "BYO Device Options", icon: <Smartphone className="w-4 h-4" />, onClick: () => onOpenBYOChecker?.() },
+          { title: "Phones with Long Battery Life", icon: <Battery className="w-4 h-4" />, onClick: () => onNavigate?.("filter", { feature: "battery" }) },
         ],
       },
       {
         title: "Switching Essentials",
         items: [
-          { title: "Compare Your Current Phone Value", icon: <GitCompare className="w-4 h-4" /> },
-          { title: "Trade-In Boost Offers", icon: <TrendingUp className="w-4 h-4" /> },
-          { title: "Phones Under $500", icon: <DollarSign className="w-4 h-4" /> },
-          { title: "Budget Accessory Packs", icon: <Package className="w-4 h-4" /> },
+          { title: "Compare Your Current Phone Value", icon: <GitCompare className="w-4 h-4" />, onClick: () => onOpenCompare?.() },
+          { title: "Trade-In Boost Offers", icon: <TrendingUp className="w-4 h-4" />, onClick: () => onNavigate?.("trade-in") },
+          { title: "Phones Under $500", icon: <DollarSign className="w-4 h-4" />, onClick: () => onNavigate?.("filter", { price: "under-500" }) },
+          { title: "Budget Accessory Packs", icon: <Package className="w-4 h-4" />, onClick: () => onNavigate?.("category", { category: "accessories" }) },
         ],
       }
     );
@@ -466,11 +498,11 @@ export function NavbarMenu({ selectedPersona }: NavbarMenuProps) {
 
   // SHOP - AI Shopping Shortcuts
   const shopAIShortcuts = [
-    { title: "Device Finder", description: "Tell us your usage → We recommend 3 phones", icon: <Bot className="w-4 h-4" /> },
-    { title: "Camera/Gaming/Battery Filter Bot", description: "Find the best phone for: gaming / TikTok / travel / kids", icon: <Search className="w-4 h-4" /> },
-    { title: "Trade-In Price Estimator", description: "Get your estimated trade-in value instantly", icon: <Calculator className="w-4 h-4" /> },
-    { title: "Switch & Compare Device Tool", description: "Compare your current phone vs new ones", icon: <GitCompare className="w-4 h-4" /> },
-    { title: "Accessory Match AI", description: "Find cases and accessories that fit your device", icon: <Package className="w-4 h-4" /> },
+    { title: "Device Finder", description: "Tell us your usage → We recommend 3 phones", icon: <Bot className="w-4 h-4" />, onClick: () => onOpenAIFinder?.() },
+    { title: "Camera/Gaming/Battery Filter Bot", description: "Find the best phone for: gaming / TikTok / travel / kids", icon: <Search className="w-4 h-4" />, onClick: () => onOpenAIFinder?.() },
+    { title: "Trade-In Price Estimator", description: "Get your estimated trade-in value instantly", icon: <Calculator className="w-4 h-4" />, onClick: () => onNavigate?.("trade-in") },
+    { title: "Switch & Compare Device Tool", description: "Compare your current phone vs new ones", icon: <GitCompare className="w-4 h-4" />, onClick: () => onOpenCompare?.() },
+    { title: "Accessory Match AI", description: "Find cases and accessories that fit your device", icon: <Package className="w-4 h-4" />, onClick: () => onNavigate?.("accessories") },
   ];
 
   // Dynamic Deal Radar - AI-generated personalized deals
@@ -536,9 +568,21 @@ export function NavbarMenu({ selectedPersona }: NavbarMenuProps) {
                 <ul className="space-y-1">
                   {section.items.map((item, itemIdx) => (
                     <li key={itemIdx}>
-                      <a
-                        href={item.href || "#"}
-                        className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-muted transition-colors group"
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (item.onClick) {
+                            item.onClick();
+                            // Close menu after a small delay to ensure click handler executes
+                            setTimeout(() => {
+                              setOpenMenu(null);
+                            }, 100);
+                          } else {
+                            setOpenMenu(null);
+                          }
+                        }}
+                        className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-muted transition-colors group text-left cursor-pointer"
                       >
                         <span className="text-muted-foreground group-hover:text-[#00A9CE] transition-colors">
                           {item.icon}
@@ -549,7 +593,7 @@ export function NavbarMenu({ selectedPersona }: NavbarMenuProps) {
                             {item.badge}
                           </Badge>
                         )}
-                      </a>
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -572,9 +616,21 @@ export function NavbarMenu({ selectedPersona }: NavbarMenuProps) {
                     <ul className="space-y-1">
                       {section.items.map((item, itemIdx) => (
                         <li key={itemIdx}>
-                          <a
-                            href={item.href || "#"}
-                            className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-[#00A9CE]/5 transition-colors group"
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (item.onClick) {
+                                item.onClick();
+                                // Close menu after a small delay to ensure click handler executes
+                                setTimeout(() => {
+                                  setOpenMenu(null);
+                                }, 100);
+                              } else {
+                                setOpenMenu(null);
+                              }
+                            }}
+                            className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-[#00A9CE]/5 transition-colors group text-left cursor-pointer"
                           >
                             <span className="text-[#00A9CE] group-hover:text-[#0098b8] transition-colors">
                               {item.icon}
@@ -585,7 +641,7 @@ export function NavbarMenu({ selectedPersona }: NavbarMenuProps) {
                                 {item.badge}
                               </Badge>
                             )}
-                          </a>
+                          </button>
                         </li>
                       ))}
                     </ul>
@@ -605,7 +661,20 @@ export function NavbarMenu({ selectedPersona }: NavbarMenuProps) {
                 <Button
                   key={idx}
                   variant="outline"
-                  className="w-full justify-start h-auto p-2 hover:bg-[#00A9CE]/5 hover:border-[#00A9CE] group"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (shortcut.onClick) {
+                      shortcut.onClick();
+                      // Close menu after a small delay to ensure click handler executes
+                      setTimeout(() => {
+                        setOpenMenu(null);
+                      }, 100);
+                    } else {
+                      setOpenMenu(null);
+                    }
+                  }}
+                  className="w-full justify-start h-auto p-2 hover:bg-[#00A9CE]/5 hover:border-[#00A9CE] group cursor-pointer"
                 >
                   <div className="flex items-start gap-2 w-full">
                     <span className="text-[#00A9CE] mt-0.5 group-hover:scale-110 transition-transform">
