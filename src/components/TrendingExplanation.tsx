@@ -17,7 +17,6 @@ export function TrendingExplanation({ device, children }: TrendingExplanationPro
   const triggerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isHoveringRef = useRef(false);
 
   // Generate trending reasons based on device properties
   const getTrendingReasons = (device: Device) => {
@@ -90,8 +89,8 @@ export function TrendingExplanation({ device, children }: TrendingExplanationPro
       const rect = triggerRef.current.getBoundingClientRect();
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
-      const popoverWidth = 380;
-      const popoverHeight = 480;
+      const popoverWidth = 480;
+      const popoverHeight = 520;
       const offset = 20;
       
       let newPosition: { top: number; left: number; side: "right" | "left" | "top" | "bottom" } = { top: 0, left: 0, side: "right" };
@@ -171,10 +170,10 @@ export function TrendingExplanation({ device, children }: TrendingExplanationPro
           {/* Backdrop overlay for better visibility - removed to prevent white screen */}
           <motion.div
             ref={contentRef}
-            initial={{ opacity: 0, scale: 0.95, y: position.side === "top" ? 10 : position.side === "bottom" ? -10 : 0, x: position.side === "right" ? -10 : position.side === "left" ? 10 : 0 }}
+            initial={{ opacity: 0, scale: 0.96, y: position.side === "top" ? 8 : position.side === "bottom" ? -8 : 0, x: position.side === "right" ? -8 : position.side === "left" ? 8 : 0 }}
             animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
             className="fixed z-[9999] pointer-events-auto"
             style={{
               top: position.top > 0 ? `${position.top}px` : 'auto',
@@ -182,71 +181,55 @@ export function TrendingExplanation({ device, children }: TrendingExplanationPro
               visibility: position.top > 0 && position.left > 0 ? 'visible' : 'hidden',
             }}
             onMouseEnter={() => {
-              isHoveringRef.current = true;
               // Clear any pending close timeout immediately
               if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
                 timeoutRef.current = null;
               }
-              // Ensure it stays open
               setIsOpen(true);
             }}
-            onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
-              const relatedTarget = e.relatedTarget;
-              
-              // Check if we're moving back to the trigger - if so, do nothing
-              if (relatedTarget instanceof Node && triggerRef.current?.contains(relatedTarget)) {
-                return;
-              }
-              
+            onMouseLeave={() => {
               // Clear any existing timeout
               if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
               }
               
-              // Set a longer delay to allow moving back to trigger
+              // Shorter delay for more responsive feel
               timeoutRef.current = setTimeout(() => {
-                const isHoveringTrigger = triggerRef.current?.matches(':hover') || false;
-                const isHoveringContent = contentRef.current?.matches(':hover') || false;
-                
-                // Only close if we're truly not hovering over anything
-                if (!isHoveringTrigger && !isHoveringContent) {
-                  isHoveringRef.current = false;
-                  setIsOpen(false);
-                }
+                setIsOpen(false);
                 timeoutRef.current = null;
-              }, 400);
+              }, 150);
             }}
           >
-            <Card className="w-[380px] p-0 shadow-2xl border-2 border-[#00A9CE]/40 bg-white backdrop-blur-sm ring-4 ring-white/50">
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-gradient-to-br from-[#00A9CE] to-purple-500 rounded-lg flex items-center justify-center shadow-lg">
-                    <Network className="w-4 h-4 text-white" />
+            <Card className="w-[480px] p-0 shadow-2xl border border-gray-200/60 bg-white backdrop-blur-sm">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 bg-gradient-to-br from-[#00A9CE] to-purple-500 rounded-xl flex items-center justify-center shadow-md">
+                    <Network className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-base bg-gradient-to-r from-[#00A9CE] to-purple-600 bg-clip-text text-transparent">
+                    <h3 className="font-semibold text-xl leading-tight bg-gradient-to-r from-[#00A9CE] to-purple-600 bg-clip-text text-transparent tracking-tight">
                       Why {device.name} is Trending
                     </h3>
-                    <p className="text-xs text-muted-foreground font-medium">
+                    <p className="text-sm text-gray-500 font-medium mt-1 tracking-wide">
                       Neo4j Graph Database
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-1.5 rounded-full hover:bg-red-100 hover:text-red-600 transition-all"
+                  className="p-1.5 rounded-lg hover:bg-gray-100 hover:text-gray-700 transition-colors"
                   aria-label="Close"
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
               {/* Neo4j Graph Visualization */}
-              <Card className="p-3 mb-3 bg-gradient-to-br from-[#00A9CE]/5 via-purple-50/50 to-blue-50/50 border border-[#00A9CE]/20 rounded-xl overflow-hidden">
+              <Card className="p-4 mb-4 bg-gradient-to-br from-[#00A9CE]/5 via-purple-50/50 to-blue-50/50 border border-[#00A9CE]/20 rounded-xl overflow-hidden">
                 <div className="relative h-[160px] rounded-lg overflow-hidden bg-gradient-to-br from-[#00A9CE]/10 via-purple-100/30 to-blue-100/30 flex items-center justify-center">
-                  {/* Neo4j Graph Visualization - Enhanced SVG representation */}
+                  {/* Neo4j Graph Visualization - SVG representation */}
                   <svg
                     width="100%"
                     height="100%"
@@ -392,25 +375,23 @@ export function TrendingExplanation({ device, children }: TrendingExplanationPro
                     </motion.g>
                   </svg>
                   
-                  <div className="absolute bottom-2 left-2 right-2 z-10 flex items-center justify-between">
-                    <Badge className="bg-gradient-to-r from-[#00A9CE] to-purple-600 text-white text-xs px-2 py-0.5 shadow-md">
-                      <Network className="w-2.5 h-2.5 mr-1" />
+                  <div className="absolute bottom-2 left-2 right-2 z-10">
+                    <Badge className="bg-gradient-to-r from-[#00A9CE] to-purple-600 text-white text-xs px-2.5 py-1 shadow-md font-medium">
+                      <Network className="w-3 h-3 mr-1.5" />
                       Neo4j Graph
                     </Badge>
-                    <div className="flex gap-1">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#9333EA] animate-pulse"></div>
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#00A9CE] animate-pulse" style={{ animationDelay: '0.4s' }}></div>
-                    </div>
                   </div>
                 </div>
               </Card>
 
               {/* Relationship Explanation */}
-              <div className="space-y-2.5">
+              <div className="space-y-3">
                 <div>
-                  <h4 className="font-bold text-xs mb-2 text-gray-700 uppercase tracking-wide">Why It's Hot 🔥</h4>
-                  <div className="space-y-1.5">
+                  <h4 className="font-semibold text-base mb-4 text-gray-800 tracking-tight flex items-center gap-2">
+                    <span className="text-lg">🔥</span>
+                    Why It's Hot
+                  </h4>
+                  <div className="space-y-2.5">
                     {reasons.map((reason, idx) => {
                       const Icon = reason.icon;
                       return (
@@ -418,22 +399,22 @@ export function TrendingExplanation({ device, children }: TrendingExplanationPro
                           key={idx}
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: idx * 0.08 }}
-                          className="flex items-center gap-2.5 p-2 rounded-xl bg-gradient-to-r from-white to-gray-50/50 hover:from-[#00A9CE]/5 hover:to-purple-50/30 transition-all cursor-pointer border border-transparent hover:border-[#00A9CE]/20 shadow-sm hover:shadow-md"
+                          transition={{ delay: idx * 0.05 }}
+                          className="flex items-center gap-3.5 p-3 rounded-lg bg-gray-50/80 hover:bg-gradient-to-r hover:from-[#00A9CE]/5 hover:to-purple-50/30 transition-all cursor-pointer border border-gray-100 hover:border-[#00A9CE]/30"
                         >
-                          <div className={`p-1.5 rounded-lg ${reason.color.replace('text-', 'bg-')}/10`}>
-                            <Icon className={`w-3.5 h-3.5 ${reason.color}`} />
+                          <div className={`p-2.5 rounded-lg ${reason.color.replace('text-', 'bg-')}/10 flex-shrink-0`}>
+                            <Icon className={`w-5 h-5 ${reason.color}`} />
                           </div>
-                          <p className="text-xs flex-1 font-medium text-gray-700">{reason.text}</p>
+                          <p className="text-base flex-1 font-medium text-gray-800 leading-snug">{reason.text}</p>
                         </motion.div>
                       );
                     })}
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-gray-200">
-                  <p className="text-xs text-gray-500 leading-relaxed">
-                    <span className="font-bold text-[#00A9CE]">Neo4j</span> analyzes relationships between user preferences, device features, and trending patterns to match Gen Z interests.
+                <div className="pt-4 border-t border-gray-200/80">
+                  <p className="text-sm text-gray-600 leading-relaxed font-normal">
+                    <span className="font-semibold text-[#00A9CE]">Neo4j</span> analyzes relationships between user preferences, device features, and trending patterns to match Gen Z interests.
                   </p>
                 </div>
               </div>
@@ -451,13 +432,11 @@ export function TrendingExplanation({ device, children }: TrendingExplanationPro
         ref={triggerRef}
         onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
           e.stopPropagation();
-          isHoveringRef.current = true;
           // Clear any pending close timeout immediately
           if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
             timeoutRef.current = null;
           }
-          // Always set open to ensure it's open
           setIsOpen(true);
         }}
         onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
@@ -469,13 +448,12 @@ export function TrendingExplanation({ device, children }: TrendingExplanationPro
             return;
           }
           
-          // Don't set isHoveringRef to false immediately - wait to see if we're moving to content
           // Clear any existing timeout
           if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
           }
           
-          // Set a longer delay to allow moving to popover
+          // Shorter delay for more responsive feel
           timeoutRef.current = setTimeout(() => {
             // Check if we're hovering over trigger or content
             const isHoveringTrigger = triggerRef.current?.matches(':hover') || false;
@@ -483,11 +461,10 @@ export function TrendingExplanation({ device, children }: TrendingExplanationPro
             
             // Only close if we're truly not hovering over anything
             if (!isHoveringTrigger && !isHoveringContent) {
-              isHoveringRef.current = false;
               setIsOpen(false);
             }
             timeoutRef.current = null;
-          }, 400);
+          }, 200);
         }}
         className="relative w-full h-full"
         style={{ 
